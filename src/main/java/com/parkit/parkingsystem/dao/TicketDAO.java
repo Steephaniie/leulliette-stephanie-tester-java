@@ -46,7 +46,7 @@ public class TicketDAO {
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_TICKET);
-            //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
+          //ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
             ps.setString(1,vehicleRegNumber);
             ResultSet rs = ps.executeQuery();
             if(rs.next()){
@@ -86,4 +86,28 @@ public class TicketDAO {
         }
         return false;
     }
+    
+ // New method to return the total number of tickets associated with a vehicle registration number
+    public int getNbTicket(String vehicleRegNumber) {
+        Connection con = null;
+        int ticketCount = 0;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement("SELECT COUNT(*) FROM ticket WHERE VEHICLE_REG_NUMBER = ?");
+            ps.setString(1, vehicleRegNumber);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                ticketCount = rs.getInt(1);
+            }
+            dataBaseConfig.closeResultSet(rs);
+            dataBaseConfig.closePreparedStatement(ps);
+        } catch (Exception ex) {
+            logger.error("Error counting tickets for vehicle registration number: " + vehicleRegNumber, ex);
+        } finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return ticketCount;
+    }
+ 
+   
 }
