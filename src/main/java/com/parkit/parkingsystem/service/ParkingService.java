@@ -35,10 +35,10 @@ public class ParkingService {
                 parkingSpot.setAvailable(false);
                 parkingSpotDAO.updateParking(parkingSpot);//allot this parking space and mark it's availability as false
 
-             // Vérification utilisateur récurrent
+             // Check for returning user
                 int ticketCount = ticketDAO.getNbTicket(vehicleRegNumber);
                 if (ticketCount > 0) {
-                    System.out.println("Heureux de vous revoir ! En tant qu’utilisateur régulier de notre parking, vous allez obtenir une remise de 5%.");
+                    System.out.println("Welcome back! As a regular user of our parking, you will receive a 5% discount.");
                 }
         
                 Date inTime = new Date();
@@ -60,11 +60,32 @@ public class ParkingService {
         }
     }
 
-    private String getVehichleRegNumber() throws Exception {
+    public String getVehichleRegNumber() throws Exception {
         System.out.println("Please type the vehicle registration number and press enter key");
         return inputReaderUtil.readVehicleRegistrationNumber();
     }
 
+
+
+    public ParkingType getVehichleType(){
+        System.out.println("Please select vehicle type from menu");
+        System.out.println("1 CAR");
+        System.out.println("2 BIKE");
+        int input = inputReaderUtil.readSelection();
+        switch(input){
+            case 1: {
+                return ParkingType.CAR;
+            }
+            case 2: {
+                return ParkingType.BIKE;
+            }
+            default: {
+                System.out.println("Incorrect input provided");
+                throw new IllegalArgumentException("Entered input is invalid");
+            }
+        }
+    }
+    
     public ParkingSpot getNextParkingNumberIfAvailable(){
         int parkingNumber=0;
         ParkingSpot parkingSpot = null;
@@ -84,25 +105,6 @@ public class ParkingService {
         return parkingSpot;
     }
 
-    private ParkingType getVehichleType(){
-        System.out.println("Please select vehicle type from menu");
-        System.out.println("1 CAR");
-        System.out.println("2 BIKE");
-        int input = inputReaderUtil.readSelection();
-        switch(input){
-            case 1: {
-                return ParkingType.CAR;
-            }
-            case 2: {
-                return ParkingType.BIKE;
-            }
-            default: {
-                System.out.println("Incorrect input provided");
-                throw new IllegalArgumentException("Entered input is invalid");
-            }
-        }
-    }
-
     public void processExitingVehicle() {
         try{
             String vehicleRegNumber = getVehichleRegNumber();
@@ -110,7 +112,7 @@ public class ParkingService {
             Date outTime = new Date();
             ticket.setOutTime(outTime);
      
-         // Vérification pour remise
+         // Check for discount eligibility
             int ticketCount = ticketDAO.getNbTicket(vehicleRegNumber);
             boolean discount = ticketCount > 1;
             
