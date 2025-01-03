@@ -1,6 +1,5 @@
 package com.parkit.parkingsystem;
 
-// imports nécessaires
 import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.model.ParkingSpot;

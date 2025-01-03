@@ -36,8 +36,8 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
-            return false;
         }
+        return false;
     }
 
     public Ticket getTicket(String vehicleRegNumber) {
@@ -65,8 +65,8 @@ public class TicketDAO {
             logger.error("Error fetching next available slot",ex);
         }finally {
             dataBaseConfig.closeConnection(con);
-            return ticket;
         }
+        return ticket;
     }
 
     public boolean updateTicket(Ticket ticket) {
@@ -77,6 +77,28 @@ public class TicketDAO {
             ps.setDouble(1, ticket.getPrice());
             ps.setTimestamp(2, new Timestamp(ticket.getOutTime().getTime()));
             ps.setInt(3,ticket.getId());
+            ps.execute();
+            return true;
+        }catch (Exception ex){
+            logger.error("Error saving ticket info",ex);
+        }finally {
+            dataBaseConfig.closeConnection(con);
+        }
+        return false;
+    }
+    
+    /**
+     * The method updates the ticket's entry date.
+     * @param ticket
+     * @return
+     */
+    public boolean updateInTimeTicket(Ticket ticket) {
+        Connection con = null;
+        try {
+            con = dataBaseConfig.getConnection();
+            PreparedStatement ps = con.prepareStatement(DBConstants.UPDATE_TICKET_IN_TIME);
+            ps.setTimestamp(1, new Timestamp(ticket.getInTime().getTime()));
+            ps.setInt(2,ticket.getId());
             ps.execute();
             return true;
         }catch (Exception ex){

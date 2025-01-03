@@ -10,12 +10,12 @@ public class FareCalculatorService {
 
 	// Method without the discount parameter
 	public void calculateFare(Ticket ticket) {
-	    calculateFare(ticket, false); // Calls the overloaded method with "discount" set to false
+		calculateFare(ticket, false); // Calls the overloaded method with "discount" set to false
 	}
 
-		public void calculateFare(Ticket ticket, boolean discount) {
+	public void calculateFare(Ticket ticket, boolean discount) {
 
-			// Data validation
+		// Data validation
 		if ((ticket.getOutTime() == null) || (ticket.getOutTime().before(ticket.getInTime()))) {
 			throw new IllegalArgumentException("Out time provided is incorrect: " + ticket.getOutTime());
 		}
@@ -36,9 +36,10 @@ public class FareCalculatorService {
 		double durationInHours = durationInMinutes / 60.0;
 
 		// Temporary debugging
-		System.out.println("Duration in minutes: " + durationInMinutes);
-		System.out.println("Duration in hours: " + durationInHours);
-		System.out.println("Parking Type: " + ticket.getParkingSpot().getParkingType());
+		// TODO: SUPPRIMER LES LOGS EN PRODUCTION
+		//System.out.println("Duration in minutes: " + durationInMinutes);
+		//System.out.println("Duration in hours: " + durationInHours);
+		//System.out.println("Parking Type: " + ticket.getParkingSpot().getParkingType());
 
 		// Calculate the fare based on the vehicle type
 		switch (ticket.getParkingSpot().getParkingType()) {
@@ -51,12 +52,11 @@ public class FareCalculatorService {
 		default:
 			throw new IllegalArgumentException("Unknown Parking Type");
 		}
-		
+
 		// Apply the discount if the ticket has a discount
-	    if (discount) {
-	        ticket.setPrice(ticket.getPrice() * 0.95);
-	    }
+		if (discount) {
+			ticket.setPrice(ticket.getPrice() * 0.95);
+		}
 	}
 
-	}
-
+}

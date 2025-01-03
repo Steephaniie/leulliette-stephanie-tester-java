@@ -90,6 +90,7 @@ public class ParkingDataBaseIT {
 				"The used parking spot should no longer be available.");
 	}
 
+
 	/**
 	 * Verifies the process of a vehicle exiting the parking lot: - Ensures the
 	 * ticket is updated with the exit time. - Ensures the fare is correctly
@@ -122,27 +123,29 @@ public class ParkingDataBaseIT {
 	 */
 	@Test
 	public void testParkingLotExitRecurringUser() throws InterruptedException {
-		// Configuration for the first entry of a recurring user
-		Ticket ticket1 = new Ticket();
-		ticket1.setVehicleRegNumber("ABCDEF");
-		ticket1.setInTime(new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000))); // 2 hours ago
-		ticket1.setOutTime(new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000) + (10 * 60 * 1000))); // 10 min
-																											// later
-		ticket1.setParkingSpot(new ParkingSpot(1, ParkingType.CAR, false));
-		ticketDAO.saveTicket(ticket1);
-		// Configuration for the second entry
-		Ticket ticket2 = new Ticket();
-		ticket2.setVehicleRegNumber("ABCDEF");
-		ticket2.setInTime(new Date(System.currentTimeMillis() - (60 * 60 * 1000))); // 1 hour ago
-		ticket2.setOutTime(null);
-		ticket2.setParkingSpot(new ParkingSpot(1, ParkingType.CAR, false));
-		ticketDAO.saveTicket(ticket2);
-		Thread.sleep(1000);
-		// Initialize the parking service and process the exit
+		// We create our first ticket
+		testParkingLotExit();
+		// To ensure chronological order, we set the first ticket's in-time to 2 hours ago
+		Ticket firstTicket = ticketDAO.getTicket("ABCDEF");
+		firstTicket.setInTime(new Date(System.currentTimeMillis() - (2 * 60 * 60 * 1000)));
+		ticketDAO.updateInTimeTicket(firstTicket);
+
+		// Initialize the parking service
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		// We create our second ticket
+		// Call the method to register a vehicle entering
+	   	parkingService.processIncomingVehicle();
+		// To ensure a fare greater than 0 and respect chronological order, set the second ticket's in-time to 1 hour ago
+		Ticket secondeTicket = ticketDAO.getTicket("ABCDEF");
+		secondeTicket.setInTime(new Date(System.currentTimeMillis() - (1 * 60 * 60 * 1000)));
+		ticketDAO.updateInTimeTicket(secondeTicket);
+		// Simulate wait time to create an entry/exit time difference
+		Thread.sleep(1000);
+		// Call the method for a vehicle exiting
 		parkingService.processExitingVehicle();
 		// Verify that the 5% discount is applied
 		Ticket updatedTicket = ticketDAO.getTicket("ABCDEF");
+		// Verify that the result corresponds to 1 hour of parking with the discount applied
 		assertEquals(Fare.CAR_RATE_PER_HOUR * 0.95, updatedTicket.getPrice(),
 				"The fare with a 5% discount for recurring users is incorrect.");
 	}
