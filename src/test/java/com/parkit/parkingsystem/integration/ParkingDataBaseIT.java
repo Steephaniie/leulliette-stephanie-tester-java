@@ -3,7 +3,6 @@ package com.parkit.parkingsystem.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import java.util.Date;
@@ -21,7 +20,6 @@ import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
-import com.parkit.parkingsystem.model.ParkingSpot;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
@@ -85,7 +83,6 @@ public class ParkingDataBaseIT {
 		assertEquals("ABCDEF", savedTicket.getVehicleRegNumber(), "The license plate number should match.");
 		// Verify that the parking spot is marked as occupied
 		int parkingSpotId = savedTicket.getParkingSpot().getId();
-		ParkingSpot parkingSpot = new ParkingSpot(parkingSpotId, ParkingType.CAR, false);
 		assertFalse(parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR) == parkingSpotId,
 				"The used parking spot should no longer be available.");
 	}
@@ -111,7 +108,6 @@ public class ParkingDataBaseIT {
 		assertTrue(updatedTicket.getPrice() == 0, "The fare should be calculated and equal than zero.");
 		// Verify that the parking spot is marked as available
 		int parkingSpotId = updatedTicket.getParkingSpot().getId();
-		ParkingSpot parkingSpot = new ParkingSpot(parkingSpotId, ParkingType.CAR, true);
 		assertEquals(parkingSpotId, parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR),
 				"The parking spot should be released and available.");
 	}
